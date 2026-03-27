@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>বীরগঞ্জ ফুয়েল আপডেট</title>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f0f2f5; padding: 20px; text-align: center; color: #333; }
+        h2 { color: #1a73e8; }
+        .card { background: white; padding: 20px; margin-bottom: 15px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); border-left: 5px solid #1a73e8; }
+        h3 { margin-top: 0; color: #444; }
+        .btn { padding: 12px 20px; margin: 8px; border: none; border-radius: 8px; color: white; cursor: pointer; font-weight: bold; font-size: 14px; transition: 0.3s; }
+        .available { background: #28a745; }
+        .available:hover { background: #218838; }
+        .not-available { background: #dc3545; }
+        .not-available:hover { background: #c82333; }
+        .status-box { margin-top: 10px; padding: 8px; background: #e9ecef; border-radius: 5px; font-size: 0.9em; }
+    </style>
+</head>
+<body>
+
+    <h2>⛽ বীরগঞ্জ তেলের আপডেট (Admin)</h2>
+    <p>নিচের বাটন চেপে পাম্পের অবস্থা পরিবর্তন করুন</p>
+    
+    <div id="pump-list"></div>
+
+    <script>
+        // আপনার Firebase Config (স্ক্রিনশট থেকে নেওয়া)
+        const firebaseConfig = {
+            apiKey: "AIzaSyDKYgxVauuy76AX2IjN5fQTMxm2GjqGurY",
+            authDomain: "birganj-petrol-pump.firebaseapp.com",
+            databaseURL: "https://birganj-petrol-pump-default-rtdb.firebaseio.com",
+            projectId: "birganj-petrol-pump",
+            storageBucket: "birganj-petrol-pump.appspot.com",
+            messagingSenderId: "834207759839",
+            appId: "1:834207759839:web:6fb5ea7cff45a91862586a"
+        };
+        
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
+        // পাম্পের লিস্ট
+        const pumps = [
+            { id: 'p1', name: 'জননী ফিলিং ষ্টেশন' },
+            { id: 'p2', name: 'এস. আর ফিলিং স্টেশন' },
+            { id: 'p3', name: 'জ্যোৎস্না ফিলিং স্টেশন' },
+            { id: 'p4', name: 'জান্নাতুল ফেরদাউয়াস ফিলিং' }
+        ];
+
+        // ডাটা আপডেট করার ফাংশন
+        function updateStatus(id, name, status) {
+            const time = new Date().toLocaleString('bn-BD');
+            db.ref('pumps/' + id).set({
+                name: name,
+                status: status,
+                lastUpdate: time
+            }).then(() => {
+                alert(name + "-এর আপডেট সফল হয়েছে!");
+            }).catch((error) => {
+                alert("এরর: " + error.message);
+            });
+        }
+
+        // স্ক্রিনে পাম্পগুলো দেখানো
+        let html = '';
+        pumps.forEach(p => {
+            html += `
+                <div class="card">
+                    <h3>${p.name}</h3>
+                    <button class="btn available" onclick="updateStatus('${p.id}', '${p.name}', 'তেল আছে')">তেল আছে ✅</button>
+                    <button class="btn not-available" onclick="updateStatus('${p.id}', '${p.name}', 'তেল নেই')">তেল নেই ❌</button>
+                </div>
+            `;
+        });
+        document.getElementById('pump-list').innerHTML = html;
+    </script>
+</body>
+</html>
