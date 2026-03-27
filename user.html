@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>বীরগঞ্জ ফুয়েল আপডেট (লাইভ)</title>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; background: #f4f7f6; padding: 20px; text-align: center; }
+        .card { background: white; padding: 15px; margin-bottom: 15px; border-radius: 12px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+        .status { font-size: 1.5em; font-weight: bold; margin: 10px 0; }
+        .available { color: #28a745; }
+        .not-available { color: #dc3545; }
+        .time { font-size: 0.8em; color: #666; }
+    </style>
+</head>
+<body>
+    <h2 style="color: #1a73e8;">⛽ বীরগঞ্জ তেলের লাইভ আপডেট</h2>
+    <div id="display-list">লোডিং...</div>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyDKYgxVauuy76AX2IjN5fQTMxm2GjqGurY",
+            authDomain: "birganj-petrol-pump.firebaseapp.com",
+            databaseURL: "https://birganj-petrol-pump-default-rtdb.firebaseio.com",
+            projectId: "birganj-petrol-pump",
+            appId: "1:834207759839:web:6fb5ea7cff45a91862586a"
+        };
+        firebase.initializeApp(firebaseConfig);
+        
+        const pumpRef = firebase.database().ref('pumps');
+        pumpRef.on('value', (snapshot) => {
+            const data = snapshot.val();
+            let html = '';
+            for (let id in data) {
+                const p = data[id];
+                const statusClass = p.status === 'তেল আছে' ? 'available' : 'not-available';
+                html += `
+                    <div class="card">
+                        <h3>${p.name}</h3>
+                        <div class="status ${statusClass}">${p.status}</div>
+                        <div class="time">শেষ আপডেট: ${p.lastUpdate || 'নেই'}</div>
+                    </div>
+                `;
+            }
+            document.getElementById('display-list').innerHTML = html;
+        });
+    </script>
+</body>
+</html>
